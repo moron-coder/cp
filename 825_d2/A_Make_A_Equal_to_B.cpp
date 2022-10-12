@@ -51,11 +51,37 @@ vector<int> KMP(string s) {
 }
 
 void solve() {
+    ll n,oa=0,ob=0,del=0;
+    cin>>n;
+    vector<ll> a(n,-1),b(n,-1);
+    for(ll i=0;i<n;i++){
+        cin>>a[i];
+        if(a[i]) oa++;
+    }
+    for(ll i=0;i<n;i++){
+        cin>>b[i];
+        if(b[i]) ob++;
+    }
+    bool same=true;
+    for(ll i=0;i<n;i++){
+        if(a[i]!=b[i]){
+            same=false;
+            del++;
+        }
+    }
+    if(same){
+        cout<<0<<endl;
+        return;
+    }
+    if(oa==ob){
+        cout<<1<<endl;
+        return;
+    }
+    cout<<min(del,1+abs(oa-ob))<<endl;
 }
 
 int main() {
     int t;
     cin >> t;
     while (t--) solve();
-    return 0;
 }

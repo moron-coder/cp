@@ -51,11 +51,24 @@ vector<int> KMP(string s) {
 }
 
 void solve() {
+    ll n;
+    cin>>n;
+    vector<ll> ar(n,-1),b(n,-1);
+    for(ll i=0;i<n;i++) cin>>ar[i];
+    for(ll i=0;i<n-1;i++){
+        b[i+1]=(ar[i]*ar[i+1])/(__gcd(ar[i],ar[i+1]));
+    }
+    for(ll i=1;i<n-1;i++){
+        if(ar[i]!=__gcd(b[i],b[i+1])){
+            cout<<"NO\n";
+            return;
+        }
+    }
+    cout<<"YES\n";
 }
 
 int main() {
     int t;
     cin >> t;
     while (t--) solve();
-    return 0;
 }

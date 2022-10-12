@@ -51,11 +51,19 @@ vector<int> KMP(string s) {
 }
 
 void solve() {
+    ll n,j=0,ans=0;
+    cin>>n;
+    vector<ll> ar(n,-1);
+    for(ll i=0;i<n;i++) cin>>ar[i];
+    for(ll i=0;i<n;i++){
+        while(j<n && ar[j]>=(j+1-i)) j++;
+        ans+=(j-i);
+    }
+    cout<<ans<<endl;
 }
 
 int main() {
     int t;
     cin >> t;
     while (t--) solve();
-    return 0;
 }
