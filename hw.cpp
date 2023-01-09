@@ -13,30 +13,34 @@ using namespace std;
 #define mod 1000000007
 #define ll long long int
 
-class uf {
+class uf{
    public:
-    int *size, *par;
-    int cap;
-    uf(int n) {
-        cap = n;
-        size = new int[n]();
-        par = new int[n]();
-        for (int i = 0; i < n; i++) par[i] = i, size[i] = 1;
+   int *par,*rank;
+   uf(int n){
+    par=new int[n];
+    rank=new int[n]();
+    for(int i=0;i<n;i++) par[i]=i;
+   } 
+
+    int getPar(int x){
+        if(par[x]==x) return x;
+        return par[x]=getPar(par[x]);
     }
 
-    int getPar(int x) {
-        if (par[x] == x) return x;
-        return par[x] = getPar(par[x]);
+    void uni(int x,int y){
+        x=getPar(x),y=getPar(y);
+        if(rank[x]>rank[y]){
+            par[y]=x,rank[x]+=rank[y];
+        }
+        else if(rank[y]>rank[x]){
+            par[x]=y,rank[y]+=rank[x];
+        }
+        else{
+            par[x]=y;
+            rank[y]++;
+        }
     }
 
-    void merge(int x, int y) {
-        x = getPar(x), y = getPar(y);
-        if (x == y) return;
-        if (size[x] < size[y])
-            par[x] = y, size[y] += size[x];
-        else
-            par[y] = x, size[x] += size[y];
-    }
 };
 
 vector<int> KMP(string s) {
