@@ -14,30 +14,26 @@ using namespace std;
 #define ll long long int
 
 class Solution {
-    int dp[101][101][21];
 public:
-    int help(vector<int> &houses,vector<vector<int>> &cost,int target,int pos,int prev){
-        int n=houses.size(),ans=1e7;
-        if(pos>=n) return (target==0)?0:1e7;
-        if(target<0) return 1e7;                                                    //  neighbors exhausted
-        if(prev!=-1 && dp[pos][target][prev]!=-1) return dp[pos][target][prev];
-        if(houses[pos]){
-            if(houses[pos]==prev) return help(houses,cost,target,pos+1,houses[pos]);    // no extra cost, target is same
-            return help(houses,cost,target-1,pos+1,houses[pos]);                        // no extra cost, target--
+    int dp[101][101][22];
+
+    ll help(vector<int> &ar,int pos,int t,vector<vector<int>> &cost,ll prev){
+        ll n=cost.size(),m=cost[0].size();
+        if(t<0) return INT_MAX;
+        if(pos>=n) return (t==0)?0:INT_MAX;
+        if(dp[pos][t][prev+1]!=-1) return dp[pos][t][prev+1];
+        if(ar[pos]) return dp[pos][t][prev+1]=help(ar,pos+1,t-((ar[pos]-1)!=prev),cost,(ar[pos]-1));
+        ll ans=INT_MAX;
+        for(ll j=0;j<m;j++){
+            ans=min(ans,min((ll)INT_MAX,cost[pos][j]+help(ar,pos+1,t-(j!=prev),cost,j)));
         }
-        //  try all the colors on houses[pos]
-        for(int clr=0;clr<cost[pos].size();clr++){
-            if(clr+1==prev) ans=min(ans,cost[pos][clr]+help(houses,cost,target,pos+1,clr+1));
-            else ans=min(ans,cost[pos][clr]+help(houses,cost,target-1,pos+1,clr+1));
-        }
-        if(prev!=-1) dp[pos][target][prev]=ans;
-        return ans;
+        return dp[pos][t][prev+1]=ans;
     }
 
-    int minCost(vector<int>& houses, vector<vector<int>>& cost, int m, int n, int target) {
-        // for any position 'pos' we'll return what is the min cost of coloring ar[pos]~ar[n-1] such that exactly 'target' neighbors are generated
+    int minCost(vector<int>& ar, vector<vector<int>>& cost, int m, int n, int target) {
         memset(dp,-1,sizeof(dp));
-        int ans = help(houses,cost,target,0,-1);
-        return ans==1e7?-1:ans;
+        ll ans = help(ar,0,target,cost,-1);
+        if(ans>=INT_MAX) return -1;
+        return ans;   
     }
 };
