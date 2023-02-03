@@ -15,47 +15,39 @@ using namespace std;
 
 class Solution {
 public:
-    ll dp[100001];
+    void p1(vector<int> &ar,vector<long long> &gEq){
+        long long n=ar.size();
+        stack<long long> stk;
+        for(long long i=n-1;i>=0;i--){
+            while (stk.size() && ar[stk.top()]<ar[i]) stk.pop();
+            if(stk.size()) gEq[i]=stk.top();
+            stk.push(i);
+        }
+    }
 
-    ll help(int pos,vector<int> &ar,vector<int> &costs,vector<int> &nextGrEq,vector<int> &nextSm){
-        int n=ar.size();
-        if(pos==n-1) return 0;
-        ll ans=LONG_MAX;
-        if(nextGrEq[pos]!=-1){
-            ll small=help(nextGrEq[pos],ar,costs,nextGrEq,nextSm);
-            if(small!=-2) ans=min(ans,costs[nextGrEq[pos]]+small);
+    void p2(vector<int> &ar,vector<long long> &lt){
+        long long n=ar.size();
+        stack<long long> stk;
+        for(long long i=n-1;i>=0;i--){
+            while (stk.size() && ar[stk.top()]>=ar[i]) stk.pop();
+            if(stk.size()) lt[i]=stk.top();
+            stk.push(i);
         }
-        if(nextSm[pos]!=-1){
-            ll small=help(nextSm[pos],ar,costs,nextGrEq,nextSm);
-            if(small!=-2) ans=min(ans,costs[nextSm[pos]]+small);
-        }
-        if(ans==LONG_MAX) return dp[pos]=-2;
-        return dp[pos]=ans;
     }
 
     long long minCost(vector<int>& ar, vector<int>& costs) {
-        memset(dp,-1,sizeof(dp));
-        int n=ar.size();
-        vector<int> nextGrEq(n,-1),nextSm(n,-1);
-        //  nextGrEq will be strictly decreasing mono stack
-        //  On pop operation, nextGrEq will save info even if an equal element is found
-        //  nextSm will be strictly increasing mono stack
-        //  On pop operation, nextSm will not save info if an equal element is found
-        vector<int> stk1,stk2;
-        for(int i=0;i<n;i++){
-            while (stk1.size() && ar[stk1.back()]<=ar[i]){
-                nextGrEq[stk1.back()]=i;                                //  saving greater than or equal element
-                stk1.pop_back();
-            }
-            stk1.push_back(i);
+        long n=ar.size();
+        // for every index, find the index which is (greater than or equal to) and the index which is (less than) the current index
+        vector<long long> gEq(n,-1),lt(n,-1);
+        p1(ar,gEq);
+        p2(ar,lt);
+        long long *dp=new long long[n]();
+        dp[n-1]=costs[n-1];
+        for(long long i=n-2;i>=0;i--){
+            dp[i]=LONG_MAX;
+            if(lt[i]!=-1) dp[i]=min(dp[i],costs[i]+dp[lt[i]]);
+            if(gEq[i]!=-1) dp[i]=min(dp[i],costs[i]+dp[gEq[i]]);
         }
-        for(int i=0;i<n;i++){
-            while (stk2.size() && ar[stk2.back()]>ar[i]){
-                nextSm[stk2.back()]=i;                                  //  saving only strictly less element
-                stk2.pop_back();
-            }
-            stk2.push_back(i);
-        }
-        return help(0,ar,costs,nextGrEq,nextSm);
+        return dp[0]-costs[0];
     }
 };

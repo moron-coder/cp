@@ -24,7 +24,29 @@ struct TreeNode {
 
 class Solution {
 public:
+
     TreeNode* deleteNode(TreeNode* r, int k) {
-        
+        if(!r) return NULL;
+        if(r->val==k){
+            TreeNode *nextGtr = r->right;
+            if(nextGtr==nullptr){
+                return r->left;
+            }
+            while (nextGtr->left!=nullptr){
+                nextGtr=(nextGtr->left);
+            }
+            swap(r->val,nextGtr->val);
+            TreeNode *newRight = deleteNode(r->right,k);
+            r->right = newRight;
+        }else if(k<r->val){
+            // go left
+            TreeNode *newLeft = deleteNode(r->left,k);
+            r->left = newLeft;
+        }else {
+            // go right
+            TreeNode *newRight = deleteNode(r->right,k);
+            r->right = newRight;
+        }
+        return r;
     }
 };
