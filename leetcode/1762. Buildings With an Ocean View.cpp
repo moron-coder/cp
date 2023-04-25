@@ -14,11 +14,13 @@ using namespace std;
 
 class Solution {
 public:
-    int addMinimum(string ar) {
-        int n=ar.size(),abcCt=1;
-        for(int i=0;i<n-1;i++){
-            if(ar[i+1]<=ar[i]) abcCt++;
+    vector<int> findBuildings(vector<int>& ar) {
+        vector<int> stk;
+        int n=ar.size();
+        for(int i=0;i<n;i++){
+            while (stk.size() && ar[stk.back()]<=ar[i]) stk.pop_back();
+            stk.push_back(i);
         }
-        return abcCt*3-n;
+        return stk;
     }
 };
