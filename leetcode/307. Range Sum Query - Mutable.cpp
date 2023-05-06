@@ -13,52 +13,73 @@ using namespace std;
 #define ll long long int
 
 class segTree{
+    // segment tree is basically division of an array into sorted segments
+    // every segment stores an info which is updated in each UPDATION query
+    // and fetched using FETCH query
+    segTree *lf,*rt;
+    int lfIdxTree,rtIdxTree;
+    int infoStored;
     public:
-    int *treeAr;
-    segTree(int n){
-        treeAr=new int[4*n+1]();
+
+    segTree(int lfIdxTree,int rtIdxTree){
+        this->lfIdxTree=lfIdxTree;
+        this->rtIdxTree=rtIdxTree;
+        lf=nullptr;
+        rt=nullptr;
+        infoStored=0;
+        if(lfIdxTree==rtIdxTree) return;
+        int mid=lfIdxTree+(rtIdxTree-lfIdxTree)/2;
+        if(mid>=lfIdxTree) this->lf = new segTree(lfIdxTree,mid);
+        if(mid+1<=rtIdxTree) this->rt = new segTree(mid+1,rtIdxTree);
     }
 
-    int getSum(int tIdx,int treeLo,int treeHi,int arLo,int arHi){
-        if(treeLo>=arLo && treeHi<=arHi) return treeAr[tIdx];
-        if(treeHi<arLo || treeLo>arHi) return 0;
-        int mid=treeLo+(treeHi-treeLo)/2;
-        return getSum(2*tIdx,treeLo,mid,arLo,arHi)+getSum(2*tIdx+1,mid+1,treeHi,arLo,arHi);
+    void modifyInfo(){
+        this->infoStored=0;
+        if(this->lf!=nullptr) this->infoStored += this->lf->infoStored;
+        if(this->rt!=nullptr) this->infoStored += this->rt->infoStored;
     }
 
-    void update(int tIdx,int treeLo,int treeHi,int arIdx,int arVal){
-        if(arIdx>treeHi || arIdx<treeLo) return;
-        if(arIdx==treeLo && arIdx==treeHi){
-            treeAr[tIdx]=arVal;
+    void updateInfo(int valAr){
+        this->infoStored = valAr;
+    }
+
+    void update(int idxAr,int valAr){
+        if(idxAr<lfIdxTree || idxAr>rtIdxTree) return;
+        if(idxAr==lfIdxTree &&idxAr==rtIdxTree){
+            updateInfo(valAr);
             return;
         }
-        int treeMid = treeLo+(treeHi-treeLo)/2;
-        if(arIdx<=treeMid){
-            update(tIdx*2,treeLo,treeMid,arIdx,arVal);
-        }else{
-            update(2*tIdx+1,treeMid+1,treeHi,arIdx,arVal);
-        }
-        treeAr[tIdx]=treeAr[tIdx*2]+treeAr[tIdx*2+1];
+        int mid=lfIdxTree+(rtIdxTree-lfIdxTree)/2;
+        if(this->lf!=nullptr && idxAr<=mid) this->lf->update(idxAr,valAr);
+        else if(this->rt!=nullptr) this->rt->update(idxAr,valAr);
+        modifyInfo();
     }
+
+    int fetchInfo(int lfAr,int rtAr){
+        if(this->lfIdxTree>=lfAr && this->rtIdxTree<=rtAr) return this->infoStored;
+        if(this->rtIdxTree<lfAr || this->lfIdxTree>rtAr) return 0;
+        int ans=0;
+        if(this->lf) ans+=this->lf->fetchInfo(lfAr,rtAr);
+        if(this->rt) ans+=this->rt->fetchInfo(lfAr,rtAr);
+        return ans;
+    }
+
 };
 
 class NumArray {
 public:
-    int n;
-    segTree *treePtr;
+    segTree *tree;
+
     NumArray(vector<int>& ar) {
-        n=ar.size();
-        treePtr=new segTree(n);
-        for(int i=0;i<n;i++){
-            treePtr->update(1,0,n-1,i,ar[i]);
-        }
+        tree = new segTree(0,ar.size()-1);
+        for(int i=0;i<ar.size();i++) tree->update(i,ar[i]);
     }
     
     void update(int index, int val) {
-        treePtr->update(1,0,n-1,index,val);
+        tree->update(index,val);
     }
     
     int sumRange(int left, int right) {
-        return treePtr->getSum(1,0,n-1,left,right);
+        return tree->fetchInfo(left,right);
     }
 };
