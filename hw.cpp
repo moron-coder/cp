@@ -54,6 +54,17 @@ vector<int> KMP(string s) {
     return lps;
 }
 
+class deb{
+	public:
+	void disp(int **ar,int n,int m){
+		cout<<"displaying ar :\n";
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;j++) cout<<ar[i][j]<<" ";
+			cout<<endl;
+		}
+	}
+};
+
 void solve() {
 }
 

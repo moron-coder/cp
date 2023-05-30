@@ -22,7 +22,6 @@ public:
             suf[i]=ar[i]|suf[i+1];
         }
         long long ans = max((1LL*suf[0]),((1LL*ar[0])<<k)|suf[1]);
-        cout<<(((1LL*ar[0])<<k)|suf[1])<<" is probable ans\n";
         for(int i=1;i<n-1;i++){
             ans=max(ans,(ar[i-1]|((1LL*ar[i])<<k)|suf[i+1]));
             ar[i]=(ar[i-1]|ar[i]);

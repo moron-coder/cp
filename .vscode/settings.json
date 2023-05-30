@@ -8,6 +8,13 @@
         "string": "cpp",
         "__split_buffer": "cpp",
         "deque": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "map": "cpp",
+        "new": "cpp",
+        "unordered_map": "cpp",
+        "iosfwd": "cpp",
+        "unordered_set": "cpp",
+        "set": "cpp",
+        "queue": "cpp"
     }
 }
