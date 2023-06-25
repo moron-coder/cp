@@ -46,9 +46,13 @@ class Player{
         return id;
     }
 
-    void move(Board board, Position startPos,Position endPos){
+    string getName(){
+        return name;
+    }
+
+    bool move(Board board, Position startPos,Position endPos){
         MoveHandler moveHandler(board, startPos, endPos);
-        moveHandler.changeBoardConfig(startPos,endPos,board);
+        return moveHandler.changeBoardConfig(startPos,endPos,board);
     }
 };
 
@@ -173,7 +177,7 @@ class MoveHandler{
         return false;
     }
     
-    void changeBoardConfig(Position startPos, Position endPos, Board board){
+    bool changeBoardConfig(Position startPos, Position endPos, Board board){
         if(checkValidMove()){
             Piece startPiece = board.getPiece(startPos);
             Piece endPiece = board.getPiece(endPos);
@@ -182,7 +186,9 @@ class MoveHandler{
             }
             board.setPiece(startPos,Piece());
             board.setPiece(endPos,startPiece);
+            return true;
         }
+        return false;
     }
 };
 
@@ -204,7 +210,8 @@ class Cell{
 };
 
 class Board{
-    int n,m;
+    int n,m,currentActivePlayerIndex;
+    vector<Player> players;
     Cell **boardCell;
     public:
 
@@ -229,11 +236,42 @@ class Board{
         return {n,m};
     }
 
-    Board(int rowCount,int colCount){
+    Board(int rowCount,int colCount, Player player1, Player player2){
+        currentActivePlayerIndex=0;
         n=rowCount;
         m=colCount;
         boardCell = new Cell*[rowCount];
-        for(int i=0;i<rowCount;i++) boardCell[i] = new Cell[colCount]();
+        for(int i=0;i<rowCount;i++){
+            boardCell[i] = new Cell[colCount]();
+            for(int j=0;j<8;j++){
+                if(i==1){
+                    boardCell[i][j].setPiece(Piece(player1,true,PAWN));
+                }else if(i==0){
+                    if(j==0 || j==m-1) boardCell[i][j].setPiece(Piece(player1,true,ROOK));
+                    else if(j==1 || j==m-2) boardCell[i][j].setPiece(Piece(player1,true,KNIGHT));
+                    else if(j==2 || j==m-3) boardCell[i][j].setPiece(Piece(player1,true,BISHOP));
+                    else if(j==3) boardCell[i][j].setPiece(Piece(player1,true,QUEEN));
+                    else if(j==4) boardCell[i][j].setPiece(Piece(player1,true,KING));
+                }else if(i==n-2){
+                    boardCell[i][j].setPiece(Piece(player2,true,PAWN));
+                }else if(i==n-1){
+                    if(j==0 || j==m-1) boardCell[i][j].setPiece(Piece(player2,true,ROOK));
+                    else if(j==1 || j==m-2) boardCell[i][j].setPiece(Piece(player2,true,KNIGHT));
+                    else if(j==2 || j==m-3) boardCell[i][j].setPiece(Piece(player2,true,BISHOP));
+                    else if(j==3) boardCell[i][j].setPiece(Piece(player2,true,KING));
+                    else if(j==4) boardCell[i][j].setPiece(Piece(player2,true,QUEEN));
+                }
+            }
+        }
+    }
+
+    Player getCurrentActivePlayer(){
+        return players[currentActivePlayerIndex];
+    }
+
+    void changeCurrentActivePlayer(){
+        int totalPlayers = players.size();
+        currentActivePlayerIndex=(currentActivePlayerIndex+1)%totalPlayers;
     }
 
     void setPiece(Position pos, Piece piece){
@@ -247,6 +285,33 @@ class Board{
 };
 
 int main(){
-    cout<<"hello\n";
+    cout<<"Chess Game Begins\n";
+    cout<<"Enter player1 name\n";
+    string player1Name;
+    cin>>player1Name;
+    cout<<"Enter player2 name\n";
+    string player2Name;
+    cin>>player2Name;
+    cout<<"Enter dimensions of the board\n";
+    int n,m;
+    cin>>n>>m;
+    Board board(n,m,player1Name,player2Name);
+    while (1){
+        Player currentPlayer = board.getCurrentActivePlayer();
+        cout<<currentPlayer.getName()<<" turn\n";
+        int startRow,startCol,endRow,endCol;
+        cout<<"Enter starting cell\n";
+        cin>>startRow>>startCol;
+        cout<<"Enter ending cell\n";
+        cin>>endRow>>endCol;
+        while (!currentPlayer.move(board,Position(startRow,startCol),Position(endRow,endCol))){
+            cout<<"That's an invalid move, please try again!!\n";
+            cout<<"Enter starting cell\n";
+            cin>>startRow>>startCol;
+            cout<<"Enter ending cell\n";
+            cin>>endRow>>endCol;
+        }
+        board.displayBoard();
+    }
     return 0;
 }
