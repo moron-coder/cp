@@ -33,7 +33,7 @@ class Player{
 
     public:
     Player(){
-        this->id = -1;
+        this->id = 0;
     }
 
     Player(string &name){
@@ -46,12 +46,13 @@ class Player{
         return id;
     }
 
-    void move(Position startPos,Position endPos){
-
+    void move(Board board, Position startPos,Position endPos){
+        MoveHandler moveHandler(board, startPos, endPos);
+        moveHandler.changeBoardConfig(startPos,endPos,board);
     }
 };
 
-int Player::playerCount=0;
+int Player::playerCount=1;
 
 enum PieceType{
     KING,
@@ -64,12 +65,13 @@ enum PieceType{
 };
 
 unordered_map<PieceType,int> PieceTypeIndex = {
-    {KING,0},
-    {QUEEN,1},
-    {BISHOP,2},
-    {KNIGHT,3},
-    {ROOK,4},
-    {PAWN,5}
+    {BLANK,0},
+    {KING,1},
+    {QUEEN,2},
+    {BISHOP,3},
+    {KNIGHT,4},
+    {ROOK,5},
+    {PAWN,6}
 };
 
 class Piece{
@@ -111,15 +113,6 @@ class Piece{
         return pieceMovements[pieceIndex];
     }
 };
-
-// unordered_map<int,vector<pair<int,int>>> Piece::pieceMovements = {
-//     {0,{{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}}},
-//     {1,{{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}}},
-//     {2,{{1,1},{-1,1},{-1,-1},{1,-1}}},
-//     {3,{{2,1},{1,2},{-1,2},{-2,1},{-2,-1},{-1,-2},{1,-2},{2,-1},}},
-//     {4,{{1,0},{0,1},{-1,0},{0,-1}}},
-//     {5,{{1,0}}}
-// };
 
 class MoveHandler{
     Position startPos,endPos;
@@ -180,8 +173,16 @@ class MoveHandler{
         return false;
     }
     
-    void changeBoardConfig(){
-
+    void changeBoardConfig(Position startPos, Position endPos, Board board){
+        if(checkValidMove()){
+            Piece startPiece = board.getPiece(startPos);
+            Piece endPiece = board.getPiece(endPos);
+            if(endPiece.getIsActive()){
+                endPiece.setIsActive(false);
+            }
+            board.setPiece(startPos,Piece());
+            board.setPiece(endPos,startPiece);
+        }
     }
 };
 
@@ -205,11 +206,22 @@ class Cell{
 class Board{
     int n,m;
     Cell **boardCell;
-    MoveHandler *moveHandler;
     public:
+
+    void displayBoard(){
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                Piece piece = boardCell[i][j].getPiece();
+                int pieceIdx = PieceTypeIndex[piece.getPieceType()];
+                string s = to_string(pieceIdx)+"_"+to_string(piece.getPlayer().getId());
+                cout<<s<<" ";
+            }
+            cout<<endl;
+        }
+    }
+
     Board(){
         n=0,m=0;
-        moveHandler = nullptr;
         boardCell = nullptr;
     }
 
