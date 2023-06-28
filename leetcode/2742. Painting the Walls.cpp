@@ -1,29 +1,29 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define pb push_back
-#define ll long long int
 
 class Solution {
-    const static ll MAX_ANS = 500000001;
+    int MAX_ANS = 500000001;
+    int dp[501][501];
 public:
-    int dp[501][2001];
-
-    ll rec(vector<int> &costs,vector<int> &times,int pos,ll freeWallsCt,ll allowedFree){
-        // min cost to paint walls[pos]~walls[n-1]
-        ll n=costs.size();
-        if(dp[pos][min(n,allowedFree)-freeWallsCt+1001]!=-1) return dp[pos][min(n,allowedFree)-freeWallsCt+1001];
+    int rec(vector<int> &cost,int pos,vector<int> &time,int timeEarned){
+        int n=cost.size();
         if(pos>=n){
-            if(allowedFree>=freeWallsCt) return 0;
+            if(timeEarned==n) return 0;
             return MAX_ANS;
         }
-        ll paintFree = MAX_ANS, paintNotFree = MAX_ANS;
-        paintFree = min(MAX_ANS, rec(costs,times,pos+1,freeWallsCt+1,allowedFree));
-        paintNotFree = min(MAX_ANS, costs[pos]+rec(costs,times,pos+1,freeWallsCt,allowedFree+times[pos]));
-        return dp[pos][min(n,allowedFree)-freeWallsCt+1001] = min(paintFree,paintNotFree);
+        if(dp[pos][min(n,timeEarned)]!=-1) return dp[pos][min(n,timeEarned)];
+        int take = MAX_ANS, notTake = MAX_ANS;
+        take = rec(cost,pos+1,time,min(n,timeEarned+time[pos]+1))+cost[pos];
+        notTake = rec(cost,pos+1,time,timeEarned);
+        take = min(MAX_ANS,take);
+        notTake = min(MAX_ANS,notTake);
+        return dp[pos][min(n,timeEarned)] = min(take,notTake);
     }
 
     int paintWalls(vector<int>& cost, vector<int>& time) {
+        // we have to earn time. Total time>=n
         memset(dp,-1,sizeof(dp));
-        return rec(cost,time,0,0,0);
+        int n=cost.size();
+        return rec(cost,0,time,0);
     }
 };
