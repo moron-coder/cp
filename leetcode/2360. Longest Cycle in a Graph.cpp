@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -15,28 +14,26 @@ using namespace std;
 
 class Solution {
 public:
-    int ans;
-
-    void dfs(vector<int> &edges,int pos,vector<int> &states,int *mp,int ct){
-        int nxt=edges[pos];
-        mp[pos]=ct;
-        states[pos]=1;
-        if(states[nxt]==0){
-            dfs(edges,nxt,states,mp,ct+1);
-        }else if(states[nxt]==1){
-            ans=max(ans,ct+1-mp[nxt]);
-        }else{
-            // ignore
+    void help(vector<int> &edges,int pos,int *vis,int *len,int curLen,int &greatestLen){
+        if(vis[pos]==1){
+            greatestLen = max(greatestLen,abs(curLen-len[pos]));
+            return;
         }
-        states[pos]=2;
+        len[pos]=curLen;
+        vis[pos]=1;
+        if(edges[pos]!=-1 && vis[edges[pos]]!=2) help(edges,edges[pos],vis,len,curLen+1,greatestLen);
+        vis[pos]=2;
     }
 
-    int longestCycle(vector<int>& edges) {
-        int n=edges.size();
-        int *mp=new int[n]();
-        ans=0;
-        vector<int> states(n,0);
-        for(int i=0;i<n;i++) if(!states[i]) dfs(edges,i,states,mp,0);
+    int longestCycle(vector<int>& ar) {
+        int n=ar.size(),ans=-1;
+        int *vis = new int[n](),*len = new int[n]();        //  vis : 0(unvisited), 1(currently being visited), 2(already visited)
+        for(int i=0;i<n;i++) vis[i]=-1;
+        for(int i=0;i<n;i++){
+            if(ar[i]!=-1 && vis[i]!=2){
+                help(ar,i,vis,len,0,ans);
+            }
+        }
         return ans;
     }
 };
