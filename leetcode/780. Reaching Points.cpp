@@ -15,14 +15,20 @@ using namespace std;
 class Solution {
 public:
     bool reachingPoints(int sx, int sy, int tx, int ty) {
-        while (!(sx==tx && sy==ty)){
+        while (!(tx==sx && ty==sy)){
             if(tx<sx || ty<sy) return false;
             if(tx>ty){
-                // tx is JUST greater than ty after doing subtraction many times
-                // find the number greater than ty
-                tx -= max(1,min(tx-sx,tx-ty)/ty)*ty;      //  max(1,..) bcz subtract ATLEAST 1 times
+                int dif = min(tx-ty,tx-sx);
+                int totalSubs = (dif/ty)*ty;
+                // tx-=ty;
+                tx-=totalSubs;
+                if(totalSubs==0) tx-=ty;
             }else{
-                ty -= max(1,min(ty-sy,ty-tx)/tx)*tx;      //  max(1,..) bcz subtract ATLEAST 1 times
+                // ty-=tx;
+                int dif = min(ty-tx,ty-sy);
+                int totalSubs = (dif/tx)*tx;
+                ty-=totalSubs;
+                if(totalSubs==0) ty-=tx;
             }
         }
         return true;

@@ -1,37 +1,47 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
+#define pb push_back
+#define mii map<int, int>
+#define mll map<ll, ll>
+#define pic pair<int, char>
+#define pdd pair<double, double>
+#define pll pair<ll, ll>
+#define vvi vector<vector<int>>
+#define ull unsigned long long int
+#define mod 1000000007
+#define ll long long int
+#define pii pair<int, int>
+
+// pre-emptive scheduling
 
 class Solution {
 public:
-    int leastInterval(vector<char>& ar, int t) {
-        priority_queue<int> rems;
-        int n=ar.size(),ans=0;
-        int *fq=new int[26]();
-        for(auto it:ar) fq[it-'A']++;
-        for(int i=0;i<26;i++) if(fq[i]) rems.push(fq[i]);
-        while (rems.size()){
-            vector<int> execs;
-            int curCycleTime=0;
-            for(int i=0;i<=t;i++){
-                if(rems.empty()){
-                    if(execs.size()) curCycleTime=t+1; 
+    int leastInterval(vector<char>& tasks, int k) {
+        priority_queue<int> pq;     //  fq, char
+        int *fq = new int[26]();
+        for(auto it:tasks) fq[it-'A']++;
+        for(int i=0;i<26;i++) if(fq[i]) pq.push({fq[i]});
+        int time=0;
+        while (pq.size()){
+            int currentPeriodTime=0;
+            queue<int> nextTasks;
+            for(int i=0;i<=k;i++){
+                if(pq.empty()){
+                    if(nextTasks.empty()) return time+currentPeriodTime;
                     break;
                 }
-                int cur=rems.top();
-                rems.pop();
-                curCycleTime++;
-                if(cur-1>0) execs.push_back(cur-1);
+                int cur=pq.top();
+                pq.pop();
+                currentPeriodTime++; //  'cur' will run at 'time'
+                cur--;
+                if(cur) nextTasks.push(cur);
             }
-            ans+=curCycleTime;
-            for(auto it:execs) rems.push(it);
+            while (nextTasks.size()){
+                pq.push(nextTasks.front());
+                nextTasks.pop();
+            }
+            time+=k+1;      //  one cycle ends
         }
-        return ans;
+        return time;
     }
 };
-
-/*
-implement redis cache having key-value pairs and expiration time
-- deleteKey() : This method should delete expired keys in less than O(n) time
-- getKey(string key) : Fetched key in O(logn) time
-- putKey(string key,string val,int expirationTime) : Puts key in O(logn) time along with updating/setting the expiration time and value
-*/

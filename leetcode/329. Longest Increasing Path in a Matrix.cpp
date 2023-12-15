@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -13,33 +12,33 @@ using namespace std;
 #define mod 1000000007
 #define ll long long int
 
-// 9:37
-
-int di[]={0,0,-1,1};
-int dj[]={1,-1,0,0};
+int di[] = {0,0,1,-1};
+int dj[] = {1,-1,0,0};
 
 class Solution {
 public:
-    int dp[201][201];
-
-    int help(vector<vector<int>> &ar,int i,int j){
-        if(dp[i][j]!=-1) return dp[i][j];
-        int n=ar.size(),m=ar[0].size(),curAns=1;
+    int help(vector<vector<int>> &ar,int curI,int curJ, int **dp){
+        int n=ar.size(),m=ar[0].size(),ans=1;
+        if(dp[curI][curJ]!=-1) return dp[curI][curJ];
         for(int dir=0;dir<4;dir++){
-            int newI=i+di[dir],newJ=j+dj[dir];
-            if(newI>=0 && newI<n && newJ>=0 && newJ<m && ar[newI][newJ]>ar[i][j]){
-                curAns=max(curAns,1+help(ar,newI,newJ));
+            int newI = curI+di[dir], newJ = curJ+dj[dir];
+            if(newI>=0 && newI<n && newJ>=0 && newJ<m && ar[newI][newJ]>ar[curI][curJ]){
+                ans = max(ans,1+help(ar,newI,newJ,dp));
             }
         }
-        return dp[i][j]=curAns;
+        return dp[curI][curJ]=ans;
     }
 
     int longestIncreasingPath(vector<vector<int>>& ar) {
-        memset(dp,-1,sizeof(dp));
-        int ans=0;
-        for(int i=0;i<ar.size();i++){
-            for(int j=0;j<ar[0].size();j++){
-                ans=max(ans,help(ar,i,j));
+        int n=ar.size(),m=ar[0].size(),ans=0;
+        int **dp=new int*[n]();
+        for(int i=0;i<n;i++){
+            dp[i]=new int[m]();
+            for(int j=0;j<m;j++) dp[i][j]=-1;
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                ans=max(ans,help(ar,i,j,dp));
             }
         }
         return ans;
