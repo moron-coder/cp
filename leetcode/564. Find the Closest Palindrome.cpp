@@ -19,7 +19,7 @@ class Solution {
         string ans;
         if(s[(n-1)/2]=='0'){
             int i=(n-1)/2;
-            while (i>=0 && s[(n-1)/2]=='0'){
+            while (i>=0 && s[i]=='0'){
                 i--;
             }
             if(i<0){
@@ -48,7 +48,7 @@ class Solution {
         string ans;
         if(s[(n-1)/2]=='9'){
             int i=(n-1)/2;
-            while (i>=0 && s[(n-1)/2]=='9'){
+            while (i>=0 && s[i]=='9'){
                 i--;
             }
             if(i<0){
