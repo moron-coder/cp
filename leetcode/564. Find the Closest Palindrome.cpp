@@ -13,71 +13,63 @@ using namespace std;
 #define ll long long int
 
 class Solution {
-    string decreasedStr(string &s){
-        //  returns the string after decreasing
-        int n=s.size();
-        string ans;
-        if(s[(n-1)/2]=='0'){
-            int i=(n-1)/2;
-            while (i>=0 && s[i]=='0'){
-                i--;
-            }
-            if(i<0){
-                cout<<"invalid string : "<<s<<endl;
-                return s;
-            }
-            s[i]--;
-            for(int j=i+1;j<=(n-1)/2;j++){
-                s[j]='9';
-            }
-        }else{
-            s[(n-1)/2]--;
-        }
-        for(auto it:s){
-            if(it!='0' || ans.size()){
-                ans.push_back(it);
-            }
-        }
-        return ans;
-    }
-
-
-    string increasedStr(string &s){
-        //  returns the string after increasing
-        int n=s.size();
-        string ans;
-        if(s[(n-1)/2]=='9'){
-            int i=(n-1)/2;
-            while (i>=0 && s[i]=='9'){
-                i--;
-            }
-            if(i<0){
-                ans.push_back('1');
-            }else{
-                s[i]++;
-            }
-            for(int j=0;j<=i;j++){
-                ans.push_back(s[j]);
-            }
-            for(int j=i+1;j<=(n-1)/2;j++){
-                ans.push_back('0');
-            }
-            for(int j=(n+1)/2;j<n;j++){
-                ans.push_back(s[j]);
-            }
-        }else{
-            s[(n-1)/2]++;
-            ans=s;
-        }
-        return ans;
-    }
-
-    pair<string,string> getNeighbouringPals(string &n){
-        //  returns {just_greater, just_smaller}
-    }
-
 public:
-    string nearestPalindromic(string n) {
-        
+    string getMirror(int lf,string &s){
+        string ans;
+        for(int i=0;i<=lf;i++) ans.push_back(s[i]);
+        for(int i=lf+1;i<s.size();i++) ans.push_back(s[s.size()-1-i]);
+        return ans;
+    }
+
+    string getDecremented(int mid,string &s){
+        string ans=s;
+        int i=mid;
+        while (i>=0 && ans[i]=='0'){
+            ans[i]='9';
+            i--;
+        }
+        if(i<0){
+            return "-1";
+        }
+        ans[i]--;
+        string tmp;
+        for(auto it:ans) if(it!='0' || tmp.size()) tmp.push_back(it);
+        return tmp;
+    }
+
+    string getIncremented(int mid,string &s){
+        string ans=s;
+        int i=mid;
+        while (i>=0 && ans[i]=='9'){
+            ans[i]='0';
+            i--;
+        }
+        string tmp;
+        if(i<0){
+            tmp.push_back('1');
+        }else{
+            ans[i]++;
+        }
+        for(auto it:ans) if(it!='0' || tmp.size()) tmp.push_back(it);
+        return tmp;
+    }
+
+    string nearestPalindromic(string s) {
+        int n=s.size();
+        int rt=(n+1)/2,lf=n-1-rt,mid=n/2;
     }
 };
+
+int main(){
+    Solution s;
+    
+    vector<string> v={"103","101","2094","4094"};
+    for(auto it:v){
+        int n=it.size();
+        int mid=(n-1)/2,lf=n-1-((n+1)/2);
+        cout<<"mirror : "<<s.getMirror(lf,it)<<endl;
+        cout<<"increment : "<<s.getIncremented(mid,it)<<endl;
+        cout<<"decrement : "<<s.getDecremented(mid,it)<<endl;
+    }
+    return 0;
+}
