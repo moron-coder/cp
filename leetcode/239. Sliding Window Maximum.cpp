@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -16,8 +15,6 @@ using namespace std;
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& ar, int k) {
-        // we want to maintain a given order => monotonic stack
-        // we want to handle the above problem for a given range
         int n=ar.size();
         vector<int> ans;
         deque<int> dq;
@@ -25,9 +22,13 @@ public:
             while (dq.size() && ar[dq.back()]<ar[i]){
                 dq.pop_back();
             }
-            while (dq.size() && dq.front()<=i-k) dq.pop_front();
             dq.push_back(i);
-            if(i>=k-1) ans.push_back(ar[dq.front()]);
+            while (dq.size() && dq.front()<=i-k){
+                dq.pop_front();
+            }
+            if(i>=k-1){
+                ans.push_back(ar[dq.front()]);
+            }
         }
         return ans;
     }
