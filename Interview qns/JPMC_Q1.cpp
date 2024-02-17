@@ -1,6 +1,7 @@
 
 #include <bits/stdc++.h>
 using namespace std;
+
 void minimumColors(int N, int E,
 				int U[], int V[])
 {
