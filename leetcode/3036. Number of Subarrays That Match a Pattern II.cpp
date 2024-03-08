@@ -15,14 +15,37 @@ using namespace std;
 class Solution {
 public:
     int countMatchingSubarrays(vector<int>& ar, vector<int>& pat) {
-        int n=ar.size(),ans=0;
-        for(int i=0;i+pat.size()<n;i++){
-            int j=0;
-            for(;j<pat.size();j++){
-                int del = max(min(ar[i+j+1]-ar[i+j],1),-1);
-                if(del!=pat[j]) break;
+        int n=ar.size(),m=pat.size(),ans=0;
+        //  make lps array of pat
+        vector<int> lps(m,0);
+        int i=0,j=1;
+        while(j<m){
+            if(pat[j]==pat[i]){
+                i++;
+                lps[j]=i;
+                j++;
+            }else if(i){
+                i=lps[i-1];
+            }else{
+                j++;
             }
-            ans+=(j==pat.size());
+        }
+        vector<int> dels;
+        for(int itr=0;itr+1<n;itr++){
+            dels.push_back(max(min(ar[itr+1]-ar[itr],1),-1));
+        }
+        i=0,j=0;
+
+        while (i<dels.size()){
+            if(dels[i]==pat[j]){
+                i++,j++;
+            }
+            if(j==pat.size()){
+                ans++,j=lps[j-1];
+            }else if(i<dels.size() && dels[i]!=pat[j]){
+                if(j) j=lps[j-1];
+                else i++;
+            }
         }
         return ans;
     }
