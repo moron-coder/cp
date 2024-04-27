@@ -20,8 +20,9 @@ public:
     }
     
     void addRange(int left, int right) {
-        map<int,int>::iterator nxt = mp.lower_bound(right);
-        int fa=-1,fb=-1,la=-1,lb=-1;  
+        map<int,int>::iterator nxt = mp.upper_bound(right);
+        int fa=-1,fb=-1,la=-1,lb=-1;
+        unordered_set<int> keysRemoved;
         while (nxt!=mp.begin() && (--nxt)->second>=left){
             if(la==-1 && lb==-1){
                 la=nxt->first;
@@ -29,12 +30,15 @@ public:
             }
             fa=nxt->first;
             fb=nxt->second;
-            mp.erase(nxt);
+            keysRemoved.insert(nxt->first);
+        }
+        for(auto it:keysRemoved){
+            mp.erase(it);
         }
         if(la==-1 && lb==-1){
             mp[left]=right;
         }else{
-            mp[min(fa,left)]=max(fb,right);
+            mp[min(fa,left)]=max(lb,right);
         }
     }
     
@@ -50,6 +54,7 @@ public:
     void removeRange(int left, int right) {
         map<int,int>::iterator nxt = mp.upper_bound(right);
         int fa=-1,fb=-1,la=-1,lb=-1;  
+        unordered_set<int> keysRemoved;
         while (nxt!=mp.begin() && (--nxt)->second>=left){
             if(la==-1 && lb==-1){
                 la=nxt->first;
@@ -57,18 +62,23 @@ public:
             }
             fa=nxt->first;
             fb=nxt->second;
-            mp.erase(nxt);
+            map<int,int>::iterator tmp = nxt;
+            --tmp;
+            keysRemoved.insert(nxt->first);
+        }
+        for(auto it:keysRemoved){
+            mp.erase(it);
         }
         if(la==-1 && lb==-1){
             return;
         }else{
-            if(fa==left){
+            if(fa>=left){
                 //  no need to insert f's. Think about l's
             }else{
                 mp[fa]=min(left,fb);
             }
 
-            if(lb==right){
+            if(lb<=right){
                 //  no need to insert l's.
             }else{
                 mp[max(right,la)]=lb;
