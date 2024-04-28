@@ -13,19 +13,22 @@ using namespace std;
 #define ll long long int
 
 class Solution {
-    int getJ(vector<int> &pi,int i,int j,string &s){
-        if(s[j]==s[i]){
-            return j;           //  if s[j] matches s[i], pi[i] = pi[i-1]+1
-        }
-        if(j==0) return -1;
-        return getJ(pi,i,pi[j-1],s);
-    }
 public:
     string longestPrefix(string s) {
         int n=s.size(),ans=0;
         vector<int> pi(n,0);
         for(int i=1;i<n;i++){ 
-            int j = getJ(pi,i,pi[i-1],s);
+            int j=pi[i-1];
+            while (1){
+                if(s[j]==s[i]){
+                    break;
+                }
+                if(j==0){
+                    j=-1;
+                    break;
+                }
+                j=pi[j-1];
+            }
             pi[i] = j+1;
         }
         return s.substr(0,pi.back());
