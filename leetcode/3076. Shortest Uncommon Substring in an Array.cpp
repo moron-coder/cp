@@ -12,94 +12,29 @@ using namespace std;
 #define mod 1000000007
 #define ll long long int
 
-class trie{
-    int fq;
-    trie *children[26];
-    public:
-
-    trie(){
-        fq=0;
-        for(int i=0;i<26;i++){
-            children[i]=NULL;
-        }
-    }
-
-    void insert(string &s){
-        int n=s.size();
-        trie *tmp = this;
-        for(int i=0;i<n;i++){
-            int nxt = s[i]-'a';
-            if(tmp->children[nxt]==NULL){
-                tmp->children[nxt]=new trie();
-            }
-            tmp = tmp->children[nxt];
-            tmp->fq++;
-        }
-    }
-
-    bool isWordPresent(string &s){
-        int n=s.size();
-        trie *tmp = this;
-        for(int i=0;i<n;i++){
-            int nxt = s[i]-'a';
-            if(tmp->children[nxt]==NULL){
-                return false; 
-            }
-            tmp = tmp->children[nxt];
-            if(tmp->fq==0){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void deleteWord(string &s){
-        int n=s.size();
-        trie *tmp=this;
-        for(int i=0;i<n;i++){
-            int nxt = s[i]-'a';
-            if(tmp->children[nxt]==NULL){
-                cout<<"error!!!\n";
-                return;
-            }
-            tmp = tmp->children[nxt];
-            tmp->fq--;
-        }
-    }
-
-};
-
 class Solution {
-    void insertAllCombinations(trie &t,string &s){
-        int n=s.size();
-        for(int i=0;i<n;i++){
+    void updateMap(string &it, unordered_map<string,int> &mp, bool insert){
+        for(int i=0;i<it.size();i++){
             string tmp;
-            for(int j=i;j<n;j++){
-                tmp.push_back(s[j]);
-                t.insert(tmp);
+            for(int j=i;j<it.size();j++){
+                tmp.push_back(it[j]);
+                insert ? mp[tmp]++ : mp[tmp]--;
+                if(mp[tmp]==0){
+                    mp.erase(tmp);
+                }
             }
         }
     }
 
-    void deleteAllCombinations(trie &t,string &s){
+    string getAns(string &s, unordered_map<string,int> &mp){
         int n=s.size();
-        for(int i=0;i<n;i++){
-            string tmp;
-            for(int j=i;j<n;j++){
-                tmp.push_back(s[j]);
-                t.deleteWord(tmp);
-            }
-        }
-    }
-
-    string getAns(string &s, trie &t){
         string ans;
-        int n=s.size();
+
         for(int i=0;i<n;i++){
             string tmp;
             for(int j=i;j<n;j++){
                 tmp.push_back(s[j]);
-                if(!t.isWordPresent(tmp) && (ans.size()==0 || ans.size()>tmp.size() || (ans.size()==tmp.size() && tmp<ans))){
+                if(!mp.count(tmp) && (ans.size()==0 || ans.size()>tmp.size() || (ans.size()==tmp.size() && tmp<ans))){
                     ans=tmp;
                 }
             }
@@ -109,18 +44,17 @@ class Solution {
 
 public:
     vector<string> shortestSubstrings(vector<string>& ar) {
-        trie t;
-        int n=ar.size();
-        for(int i=0;i<n;i++){
-            insertAllCombinations(t,ar[i]);
+        unordered_map<string,int> mp;
+        for(auto it:ar){
+            updateMap(it,mp,true);
         }
 
         vector<string> ans;
 
-        for(int i=0;i<n;i++){
-            deleteAllCombinations(t,ar[i]);
-            ans.push_back(getAns(ar[i],t));
-            insertAllCombinations(t,ar[i]);
+        for(auto it:ar){
+            updateMap(it,mp,false);
+            ans.push_back(getAns(it,mp));
+            updateMap(it,mp,true);
         }
         return ans;
     }
