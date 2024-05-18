@@ -49,7 +49,7 @@ public:
             ans=incAns+1;
         }else{
             actionIdx[currentSkills][pos]=(incAns+1<notIncAns);
-            ans = (incAns<notIncAns)?incAns+1:notIncAns;
+            ans = (incAns+1<notIncAns)?incAns+1:notIncAns;
         }
         return dp[currentSkills][pos]=ans;
     }
