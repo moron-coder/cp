@@ -13,37 +13,34 @@ using namespace std;
 #define ll long long int
 
 class Solution {
-    const int MAX_ANS = 10000;
-    int dp[31][31][31];
+    int dp[31][31];
 
-    int help(vector<int> &ar,int pos,int en, int req,int k, vector<int> &pre){
-        int n=en-pos+1;
-        if(pos>=ar.size() || req==0) return 0;
-        if(dp[pos][en][req]!=-1) return dp[pos][en][req];
-        if(req==1){
-            if(n==1){
-                return 0;
-            }else if(((n-1)%(k-1))==0){
-                int ans = help(ar,pos,en,k,k,pre)+pre[en];
-                if(pos) ans-=pre[pos-1];
-                return ans;
-            }
-            return MAX_ANS;
+    int help(vector<int> &ar,int st, int en, int k, vector<int> &prefs){
+        if(st==en){
+            return 0;
         }
-        int ans=MAX_ANS;
-        for(int tmp=pos;tmp<en;tmp++){
-            int c1 = help(ar,pos,tmp,1,k,pre) + help(ar,tmp+1,en,req-1,k,pre);
-            ans=min(ans,c1);
+        if(dp[st][en]!=-1) return dp[st][en];
+        int totSum = prefs[en];
+        if(st) totSum-=prefs[st-1];
+        if((en-st)%(k-1)) totSum=0;
+        int ans=INT_MAX;
+        // ar[st]~ar[newEn] : left partition
+        // ar[newEn+1]~ar[en] : right partition
+        for(int newEn=st;newEn<en;newEn+=k-1){
+            int smallSum = help(ar, st, newEn, k, prefs) + help(ar, newEn+1, en, k, prefs);
+            ans=min(ans, smallSum);
         }
-        return dp[pos][en][req] = ans;
+        int ret = (ans==INT_MAX?0:ans)+totSum;
+        return dp[st][en] = ret;
     }
+
 public:
     int mergeStones(vector<int>& ar, int k) {
         memset(dp,-1,sizeof(dp));
         int n=ar.size();
         if((n-1)%(k-1)) return -1;
-        vector<int> pre(n,ar[0]);
-        for(int i=1;i<n;i++) pre[i]=ar[i]+pre[i-1];
-        return help(ar,0,n-1,1,k,pre);
+        vector<int> prefs(n,ar[0]);
+        for(int i=1;i<n;i++) prefs[i]=prefs[i-1]+ar[i];
+        return help(ar,0,n-1,k,prefs);
     }
 };
