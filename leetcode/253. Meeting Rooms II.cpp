@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -16,10 +15,16 @@ using namespace std;
 class Solution {
 public:
     int minMeetingRooms(vector<vector<int>>& ar) {
-        int *tm=new int[1000001]();
-        int cur=0,ans=0;
-        for(auto it:ar) tm[it[0]]++,tm[it[1]+1]--;
-        for(int i=0;i<=1000000;i++) cur+=tm[i],ans=max(ans,cur);
-        return ans; 
+        int *dp = new int[1000001]();
+        for(auto it:ar){
+            dp[it[0]]++;
+            dp[it[1]]--;
+        }
+        int sum=0,ans=0;
+        for(int i=0;i<=1000000;i++){
+            sum+=dp[i];
+            ans=max(ans,sum);
+        }
+        return ans;
     }
 };

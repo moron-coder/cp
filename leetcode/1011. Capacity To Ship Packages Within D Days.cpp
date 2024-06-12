@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -14,29 +13,29 @@ using namespace std;
 #define ll long long int
 
 class Solution {
-public:
-    bool isOk(vector<int> &weights,int days,int cap){
-        int sum=0,cur=1;
-        for(auto it:weights){
-            if(it>cap) return false;
-            sum+=it;
+    bool isOk(vector<int> &ar,int d,int cap){
+        int sum=0,dayCt=0;
+        for(int i=0;i<ar.size();i++){
+            sum+=ar[i];
             if(sum>cap){
-                sum=it;
-                cur++;
+                dayCt++;
+                sum=ar[i];
             }
         }
-        return cur<=days;
+        return dayCt+1<=d;
     }
-
-    int shipWithinDays(vector<int>& weights, int days) {
-        // sort(weights.begin(),weights.end());
-        int lo=0,hi=INT_MAX,ans=INT_MAX;
-        while(lo<=hi){
-            int mid=lo+(hi-lo)/2;
-            if(isOk(weights,days,mid)){
-                hi=mid-1;
+public:
+    int shipWithinDays(vector<int>& ar, int d) {
+        int lo=0,hi=25000000,ans=hi;
+        for(auto it:ar) lo=max(lo,it);
+        while (lo<=hi){
+            int mid = lo+(hi-lo)/2;
+            if(isOk(ar, d, mid)){
                 ans=mid;
-            }else lo=mid+1;
+                hi=mid-1;
+            }else{
+                lo=mid+1;
+            }
         }
         return ans;
     }
