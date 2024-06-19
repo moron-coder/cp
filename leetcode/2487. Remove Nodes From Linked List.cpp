@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
 #define pb push_back
 #define mii map<int, int>
 #define mll map<ll, ll>
@@ -25,16 +24,15 @@ class Solution {
 public:
     ListNode* removeNodes(ListNode* head) {
         stack<ListNode*> stk;
-        for(ListNode* ptr=head;ptr!=NULL;ptr=ptr->next){
-            while (stk.size() && stk.top()->val<ptr->val){
+        for(ListNode* tmp=head;tmp!=NULL;tmp = tmp->next){
+            while (!stk.empty() && tmp->val > stk.top()->val){
                 stk.pop();
             }
-            stk.push(ptr);
+            stk.push(tmp);
         }
-        ListNode* ans=stk.top();
-        stk.pop();
+        ListNode *ans=NULL;
         while (stk.size()){
-            stk.top()->next=ans;
+            stk.top()->next = ans;
             ans=stk.top();
             stk.pop();
         }
