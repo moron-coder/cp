@@ -12,18 +12,29 @@ using namespace std;
 #define mod 1000000007
 #define ll long long int
 
+/**
+* @author : Utkarsh Kumar
+* @date : 2024-07-05
+*/
+
 class Solution {
 public:
-    int sumCounts(vector<int>& ar) {
+    int maximumLength(vector<int>& ar, int k) {
         int n=ar.size(),ans=0;
+        int **ctr=new int*[1001]();
+        for(int i=0;i<=1000;i++){
+            ctr[i] = new int[n]();
+        }
+
         for(int i=0;i<n;i++){
-            unordered_map<int,int> mp;
-            for(int j=i;j<n;j++){
-                mp[ar[j]]++;
-                int sz = mp.size();
-                ans+=(sz*sz);
+            int maxLen=0;
+            for(int j=0;j<i;j++){
+                int rem = (ar[j]+ar[i])%k;
+                ctr[rem][i] = max(ctr[rem][i], 1+ctr[rem][j]);
+                ans=max(ans,ctr[rem][i]+1);
             }
         }
         return ans;
     }
 };
+
