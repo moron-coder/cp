@@ -27,7 +27,7 @@ struct TreeNode {
 };
 
 class Solution {
-    ll help(TreeNode *r, ll tg, ll rSum, map<ll,ll> &mp){
+    ll help(TreeNode *r, ll tg, ll rSum, unordered_map<ll,ll> &mp){
         if(r==nullptr){
             return 0;
         }
@@ -52,7 +52,7 @@ class Solution {
 
 public:
     int pathSum(TreeNode* root, int targetSum) {
-        map<ll,ll> mp;
+        unordered_map<ll,ll> mp;
         return help(root, targetSum, 0, mp);
     }
 };
